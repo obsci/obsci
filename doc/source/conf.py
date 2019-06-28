@@ -79,7 +79,6 @@ html_theme_options = {
     'titles_only': False,
     'style_external_links': True,
     'github_url': 'https://github.com/obsci/obsci',
-    'analytics_id': 'UA-142982734-1',
 }
 
 # Output file base name for HTML help builder.
