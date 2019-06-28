@@ -32,7 +32,10 @@ setup(
     ],
     setup_requires=['setuptools_scm'],
     extras_require={
-        'docs': ['Sphinx'],
+        'docs': [
+            'Sphinx',
+            'sphinx_rtd_theme',
+        ],
         'pep8': ['flake8'],
         # requirements for the obsci-worker
         # NOTE: podman does currently not work so use docker for now
