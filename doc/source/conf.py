@@ -63,6 +63,8 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
+
+html_extra_path = ['extra_files']
 #html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 
