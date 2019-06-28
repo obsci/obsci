@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to OBSCI - a CI system for the Open Build Service &#8212; obsci  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Config" href="config.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-obsci-a-ci-system-for-the-open-build-service">
+<h1>Welcome to OBSCI - a CI system for the Open Build Service<a class="headerlink" href="#welcome-to-obsci-a-ci-system-for-the-open-build-service" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="glossary.html#term-obsci"><span class="xref std std-term">OBSCI</span></a> is a CI system for testing <a class="reference internal" href="glossary.html#term-obs"><span class="xref std std-term">OBS</span></a> packages. <cite>OBSCI</cite>
+is pretty new and there are plenty of things to do. Currently the
+following workflow is supported:</p>
+<ul class="simple">
+<li><p>Use docker containers as <a class="reference internal" href="glossary.html#term-test-environment"><span class="xref std std-term">Test environment</span></a></p></li>
+<li><p>Defining tests in a OBS package via a <a class="reference internal" href="glossary.html#term-5"><span class="xref std std-term">_obsci</span></a> config file</p></li>
+<li><p>Installing RPM <a class="reference internal" href="glossary.html#term-test-subject"><span class="xref std std-term">Test Subject</span></a> in the container</p></li>
+</ul>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="glossary.html#term-obsci"><span class="xref std std-term">OBSCI</span></a> can be directly installed from git into a virtual environment:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">virtualenv obsci-venv</span>
+<span class="go">source obsci-venv/bin/activate</span>
+<span class="go">pip install git+https://github.com/obsci/obsci.git -e .[worker]</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Add a <cite>_obsci</cite> file which defines tests to your package. The file should look
+like:</p></li>
+</ol>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">tests</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">first_test.sh</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Add a <cite>first_test.sh</cite> file to your package. This file is the actual test.
+If the exit code is 0, the test succeeded, otherwise it failed.
+<cite>first_test.sh</cite> could be written in any language. The only thing that
+matters is the exit code.</p></li>
+</ol>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="s2">&quot;This is my testscript&quot;</span>
+<span class="nb">exit</span> <span class="m">0</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>How the tests can be executed with the obsci-worker:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">obsci-worker --obs-username tbechtold --obs-password mypassword \</span>
+<span class="go">    home:tbechtold openSUSE_Leap_15.1 x86_64 python-Jinja2</span>
+</pre></div>
+</div>
+<p>Here, <cite>obs-username</cite> and <cite>obs-password</cite> are needed to be able to talk
+to the <a class="reference internal" href="glossary.html#term-obs-api"><span class="xref std std-term">OBS Api</span></a>.
+<cite>home:tbechtold</cite> is the OBS project and <cite>python-Jinja2</cite> the OBS package.
+This package must contain the <cite>first_test.sh</cite> and <cite>_obsci</cite> file.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">obsci</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=obsci&repo=obsci&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="config.html" title="next chapter">Config</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, SUSE Linux GmbH.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/obsci/obsci" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
