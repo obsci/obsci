@@ -17,6 +17,7 @@ deploy:
   skip_cleanup: true
   local_dir: doc/build/html
   github_token: $GITHUB_TOKEN
+  keep_history: true
   on:
     branch: master
     condition: $TOX_ENV = docs
