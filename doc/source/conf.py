@@ -63,14 +63,21 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
-html_theme = 'alabaster'
+#html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 html_theme_options = {
-    'github_user': 'obsci',
-    'github_repo': 'obsci',
-    'github_banner': True,
-    'page_width': '1280px',
-    'sidebar_width': '340px',
+    'display_version': True,
+    'prev_next_buttons_location': 'both',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False,
+    'style_external_links': True,
+    'github_url': 'https://github.com/obsci/obsci',
+    'analytics_id': 'UA-142982734-1',
 }
 
 # Output file base name for HTML help builder.
