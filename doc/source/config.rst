@@ -15,3 +15,9 @@ RPM spec files, ...).
   ---
   tests:
     - name: first-test
+
+_obsci schema validation
+------------------------
+The jsonschema that is used to validate the `_obsci` file is:
+
+.. literalinclude:: ../../obsci/worker/config_package_schema.json
