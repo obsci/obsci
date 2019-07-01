@@ -42,7 +42,8 @@ setup(
         # NOTE: podman does currently not work so use docker for now
         'worker': [
             'docker',
-            'pyyaml'  # for parsing the _obsci config file in packages
+            'pyyaml',  # for parsing the _obsci config file in packages
+            'jsonschema',  # for validating the _obsci config
         ],
     },
     entry_points={
