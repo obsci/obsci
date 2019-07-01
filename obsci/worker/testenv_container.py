@@ -39,6 +39,7 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
     def testenvs_available(cls):
         return [
             'opensuse-leap-15.1',
+            'sles-12sp4',
         ]
 
     @property
@@ -53,6 +54,8 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
     def url(self):
         if self._testenv == 'opensuse-leap-15.1':
             return 'registry.hub.docker.com/opensuse/leap:15.1'
+        if self._testenv == 'sles-12sp4':
+            return 'registry.suse.de/suse/containers/sle-server/12-sp4/containers/suse/sles12sp4'  # noqa
         else:
             raise ValueError('testenv "{}" does not provide an url'.format(
                 self._testenv))
@@ -65,8 +68,9 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
         """run a command in the current container"""
         logger.info('{}: calling "{}"'.format(self._container.short_id, cmd))
         rc, output = self._container.exec_run(cmd, **kwargs)
-        if rc == 0:
-            msg = 'Can not call command "{}": {}'.format(cmd, output)
+        if not rc == 0:
+            msg = 'Can not call command "{}" (rc: {}): {}'.format(
+                cmd, rc, output)
             raise Exception(msg)
         else:
             if log_output:
@@ -77,16 +81,21 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
                     self._container.short_id, cmd)
             logger.info(msg)
 
-    def prepare(self):
+    def prepare(self, testenv_repos):
         client = docker.from_env()
         image = client.images.pull(self.url)
         # FIXME: the sleep prevents the container from stopping for the sleep
         # time. ugly hack
         self._container = client.containers.run(image, '/usr/bin/sleep 600',
                                                 detach=True)
+        logger.info('{}: adding {} extra repositories'.format(
+            self._container.short_id, len(testenv_repos)))
+        for repo in testenv_repos:
+            self._run_command('zypper -n ar --no-gpgcheck {} {}'.format(
+                repo['publish_repo_url'], repo['project']))
         # update base container
         # FIXME: enable the updates
-        # self._run_command('zypper -n ref')
+        self._run_command('zypper -n ref')
         # self._run_command('zypper -n dup')
         logger.info('{}: container started'.format(self._container.short_id))
 
