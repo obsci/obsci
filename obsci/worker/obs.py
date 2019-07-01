@@ -76,7 +76,7 @@ class OBSCIObs(object):
         url = '{}/source/{}/{}/{}'.format(
             self._url, project, package, filename)
         r = requests.get(url, auth=self._obs_auth)
-        if r.status_code == 200:
+        if not r.status_code == 200:
             logger.info('Can not get file "{}" file from '
                         'package ({})'.format(filename, r.status_code))
             return None
