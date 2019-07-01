@@ -65,8 +65,9 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
         """run a command in the current container"""
         logger.info('{}: calling "{}"'.format(self._container.short_id, cmd))
         rc, output = self._container.exec_run(cmd, **kwargs)
-        if rc == 0:
-            msg = 'Can not call command "{}": {}'.format(cmd, output)
+        if not rc == 0:
+            msg = 'Can not call command "{}" (rc: {}): {}'.format(
+                cmd, rc, output)
             raise Exception(msg)
         else:
             if log_output:
