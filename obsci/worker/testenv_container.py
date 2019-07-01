@@ -81,16 +81,21 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
                     self._container.short_id, cmd)
             logger.info(msg)
 
-    def prepare(self):
+    def prepare(self, testenv_repos):
         client = docker.from_env()
         image = client.images.pull(self.url)
         # FIXME: the sleep prevents the container from stopping for the sleep
         # time. ugly hack
         self._container = client.containers.run(image, '/usr/bin/sleep 600',
                                                 detach=True)
+        logger.info('{}: adding {} extra repositories'.format(
+            self._container.short_id, len(testenv_repos)))
+        for repo in testenv_repos:
+            self._run_command('zypper -n ar --no-gpgcheck {} {}'.format(
+                repo['publish_repo_url'], repo['project']))
         # update base container
         # FIXME: enable the updates
-        # self._run_command('zypper -n ref')
+        self._run_command('zypper -n ref')
         # self._run_command('zypper -n dup')
         logger.info('{}: container started'.format(self._container.short_id))
 

@@ -81,7 +81,7 @@ class OBSCITestEnvBase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def prepare(self):
+    def prepare(self, testenv_repos):
         """Prepare the testenv"""
 
     @abc.abstractmethod
@@ -96,9 +96,9 @@ class OBSCITestEnvBase(abc.ABC):
     def run_test(self, test_names):
         """Run the test(s)"""
 
-    def run(self, testsubject_srcdir, test_srcdir, test_names):
+    def run(self, testenv_repos, testsubject_srcdir, test_srcdir, test_names):
         """Run the different steps"""
-        self.prepare()
+        self.prepare(testenv_repos)
         # prepare the testsubject(s)
         self.prepare_testsubject_destdir()
         self.copy_testsubject(testsubject_srcdir)

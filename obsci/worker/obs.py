@@ -32,6 +32,51 @@ class OBSCIObs(object):
         self._password = password
         self._obs_auth = HTTPBasicAuth(self._username, self._password)
 
+    def _get_project_meta(self, project):
+        """get the OBS metadata for the given project"""
+        url = '{}/source/{}/_meta'.format(
+            self._url, project)
+        resp = requests.get(url, auth=self._obs_auth)
+        if not resp.status_code == 200:
+            raise Exception('Can not get _meta ({})'.format(resp.status_code))
+
+        # FIXME: we trust the input from OBS here. Should be use defusedxml?
+        root = ET.fromstring(resp.text)
+        return root
+
+    def _get_download_url(self):
+        # FIXME: This is a hack. There is no way to get the download
+        # url via the OBS API
+        if 'opensuse.org' in self._url:
+            return 'https://download.opensuse.org/repositories/'
+        elif 'suse.de' in self._url:
+            return 'http://download.suse.de/ibs/'
+        else:
+            raise Exception('Can not guess download url for "{}"'.format(
+                self._url))
+
+    def get_project_repositories(self, project, repo, arch):
+        """get the defined repositories from the project metadata"""
+        repos = []
+        root = self._get_project_meta(project)
+        for r in root.findall('./repository/[@name=\'{}\']'.format(repo)):
+            # we are only interested in repos with the given arch
+            # FIXME: I guess this can be done better with xpath
+            found_arch = r.findall('[arch=\'{}\']'.format(arch))
+            if not found_arch:
+                continue
+            # get the repo project and repo name
+            for found_path in r.findall('path'):
+                publish_url = '{}{}/{}'.format(
+                    self._get_download_url(),
+                    found_path.get('project').replace(':', ':/'),
+                    found_path.get('repository'),
+                )
+                repos.append({'project': found_path.get('project'),
+                              'repository': found_path.get('repository'),
+                              'publish_repo_url': publish_url})
+        return repos
+
     def get_binaries_list(self, project, repo, arch, package):
         url = '{}/build/{}/{}/{}/{}'.format(
             self._url, project, repo, arch, package)

@@ -106,6 +106,7 @@ def main():
         # a directory where the testsubject files are stored
         testsubject_srcdir = os.path.join(tempdir, 'testsubject')
         os.mkdir(testsubject_srcdir)
+
         obs.get_binaries(
             testsubject_srcdir, args['obs-project'], args['obs-repository'],
             args['obs-architecture'], args['obs-package'])
@@ -118,8 +119,13 @@ def main():
             raise ValueError('Invalid testenv type "{}"'.format(
                 args['testenv_type']))
 
+        # get the defined repos from the OBS project metadata
+        testenv_repos = obs.get_project_repositories(args['obs-project'],
+                                                     args['obs-repository'],
+                                                     args['obs-architecture'])
         # do the actual work
-        te.run(testsubject_srcdir, test_srcdir, obsci_config.test_names)
+        te.run(testenv_repos, testsubject_srcdir,
+               test_srcdir, obsci_config.test_names)
 
 
 # for debugging

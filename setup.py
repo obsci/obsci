@@ -37,7 +37,10 @@ setup(
             'sphinx_rtd_theme',
         ],
         'pep8': ['flake8'],
-        'tests': ['pytest'],
+        'tests': [
+            'pytest',
+            'requests_mock',
+        ],
         # requirements for the obsci-worker
         # NOTE: podman does currently not work so use docker for now
         'worker': [
