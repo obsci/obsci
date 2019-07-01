@@ -91,7 +91,7 @@ class OBSCIObs(object):
     def get_config_from_package(self, project, package):
         """try to find a _obsci in a package"""
         f = self._get_file_from_package(project, package, '_obsci')
-        return f.getvalue()
+        return f
 
     def get_test_from_package(self, project, package, testfilename):
         f = self._get_file_from_package(project, package, testfilename)

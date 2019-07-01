@@ -80,7 +80,7 @@ def main():
         logger.info('Stopping here. No _obsci test config found')
         return 0
 
-    obsci_config = OBSCIConfigPackage(obsci_config_str)
+    obsci_config = OBSCIConfigPackage(obsci_config_str.getvalue())
     if not len(obsci_config.test_names):
         logger.info('Stopping here. No tests defined in _obsci config')
         return 0
