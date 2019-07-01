@@ -36,7 +36,7 @@ class OBSCIObs(object):
         url = '{}/build/{}/{}/{}/{}'.format(
             self._url, project, repo, arch, package)
         resp = requests.get(url, auth=self._obs_auth)
-        if resp.status_code == 200:
+        if not resp.status_code == 200:
             raise Exception('Can not get list of OBS binary '
                             'packages ({})'.format(resp.status_code))
         # FIXME: we trust the input from OBS here. Should be use defusedxml?
@@ -60,7 +60,7 @@ class OBSCIObs(object):
             url = '{}/build/{}/{}/{}/{}/{}'.format(
                 self._url, project, repo, arch, package, name)
             r = requests.get(url, auth=self._obs_auth, stream=True)
-            if r.status_code == 200:
+            if not r.status_code == 200:
                 raise Exception('Can not get OBS binary package '
                                 'from {}'.format(url))
             dest = os.path.join(dest_dir, name)
