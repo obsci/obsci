@@ -44,6 +44,7 @@ setup(
             'docker',
             'pyyaml',  # for parsing the _obsci config file in packages
             'jsonschema',  # for validating the _obsci config
+            'requests',
         ],
     },
     entry_points={
