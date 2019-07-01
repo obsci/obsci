@@ -39,6 +39,7 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
     def testenvs_available(cls):
         return [
             'opensuse-leap-15.1',
+            'sles-12sp4',
         ]
 
     @property
@@ -53,6 +54,8 @@ class OBSCITestEnvContainer(OBSCITestEnvBase):
     def url(self):
         if self._testenv == 'opensuse-leap-15.1':
             return 'registry.hub.docker.com/opensuse/leap:15.1'
+        if self._testenv == 'sles-12sp4':
+            return 'registry.suse.de/suse/containers/sle-server/12-sp4/containers/suse/sles12sp4'  # noqa
         else:
             raise ValueError('testenv "{}" does not provide an url'.format(
                 self._testenv))
