@@ -6,7 +6,8 @@ is pretty new and there are plenty of things to do. Currently the
 following workflow is supported:
 
 * Use docker containers as :term:`Test environment`
-* Defining tests in a OBS package via a :term:`_obsci` config file
+* Defining tests in a OBS package via a :term:`_obsci` YAML file or use
+  tests from other packages via a OBS project config entry
 * Installing RPM :term:`Test Subject` in the container
 
 Quickstart

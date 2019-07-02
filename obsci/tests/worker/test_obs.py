@@ -15,7 +15,7 @@
 
 import requests_mock
 
-from obsci.tests.test_base import OBSCITestBase
+from obsci.tests.test_base import TestOBSCIBase
 from obsci.worker import obs
 
 # a mock for OBS project metadata
@@ -50,7 +50,7 @@ OBS_PROJECT_META_MOCK = """<project name="home:tbechtold:branches:devel:language
 """
 
 
-class OBSCITestOBS(OBSCITestBase):
+class OBSCITestOBS(TestOBSCIBase):
     """Test OBS integration"""
 
     @requests_mock.Mocker()
@@ -71,3 +71,18 @@ class OBSCITestOBS(OBSCITestBase):
         o = obs.OBSCIObs('http://build.opensuse.org', 'username', 'password')
         assert o._get_download_url() == \
             'https://download.opensuse.org/repositories/'
+
+    @requests_mock.Mocker()
+    def test_get_config_from_project_valid_config(self, rq_mock):
+        rq_mock.get(requests_mock.ANY,
+                    text="_obsci: '{\"tests\": [\"name\": \"fooname\"]}'")
+        o = obs.OBSCIObs('http://build.opensuse.org', 'username', 'password')
+        assert '{"tests": ["name": "fooname"]}' == \
+            o.get_config_from_project('')
+
+    @requests_mock.Mocker()
+    def test_get_config_from_project_invalid_config(self, rq_mock):
+        rq_mock.get(requests_mock.ANY,
+                    text="another_key: '{\"tests\": [\"name\": \"fooname\"]}'")
+        o = obs.OBSCIObs('http://build.opensuse.org', 'username', 'password')
+        assert o.get_config_from_project('') is None
