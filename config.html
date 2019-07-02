@@ -82,8 +82,10 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Config</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#obsci">_obsci</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#obsci-schema-validation">_obsci schema validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obsci-from-a-obs-package">_obsci from a OBS package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obsci-from-a-obs-project">_obsci from a OBS project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obsci-package-schema-validation">_obsci package schema validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obsci-packages-project-config-schema-validation">_obsci_packages project config schema validation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
@@ -163,8 +165,8 @@
   <div class="section" id="config">
 <h1>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h1>
 <p>obsci needs to know which tests should be executed.</p>
-<div class="section" id="obsci">
-<h2>_obsci<a class="headerlink" href="#obsci" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="obsci-from-a-obs-package">
+<h2>_obsci from a OBS package<a class="headerlink" href="#obsci-from-a-obs-package" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="glossary.html#term-5"><span class="xref std std-term">_obsci</span></a> is a configuration file (in YAML format ) that can be stored
 in <a class="reference internal" href="glossary.html#term-obs"><span class="xref std std-term">OBS</span></a> packages next to the other package files (like tarballs,
 RPM spec files, …).</p>
@@ -173,10 +175,25 @@ RPM spec files, …).</p>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">first-test</span>
 </pre></div>
 </div>
+<p>The test name (in this example, <em>first-test</em>) needs to be a file (eg. a shell
+script) that is in the same package. This script will be executed as a
+test.</p>
 </div>
-<div class="section" id="obsci-schema-validation">
-<h2>_obsci schema validation<a class="headerlink" href="#obsci-schema-validation" title="Permalink to this headline">¶</a></h2>
-<p>The jsonschema that is used to validate the <cite>_obsci</cite> file is:</p>
+<div class="section" id="obsci-from-a-obs-project">
+<h2>_obsci from a OBS project<a class="headerlink" href="#obsci-from-a-obs-project" title="Permalink to this headline">¶</a></h2>
+<p>To be able to define tests for a whole project, the OBS project config can
+be adjusted (via valid JSON) to add tests from other packages.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_obsci</span><span class="p">:</span> <span class="s1">&#39;{&quot;test_packages&quot;: [{&quot;project&quot;: &quot;home:tbechtold:branches:devel:languages:python&quot;, &quot;package&quot;: &quot;python-Jinja2&quot;}]}&#39;</span>
+</pre></div>
+</div>
+<p>This project config would add all tests that are found in the package <em>python-Jinaj2</em>
+from the project <em>home:tbechtold:branches:devel:languages:python</em>.
+With that, it is possible to define packages that contain tests and reference
+theses packages via the project config.</p>
+</div>
+<div class="section" id="obsci-package-schema-validation">
+<h2>_obsci package schema validation<a class="headerlink" href="#obsci-package-schema-validation" title="Permalink to this headline">¶</a></h2>
+<p>The jsonschema that is used to validate the <cite>_obsci</cite> file from a package is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;$id&quot;</span><span class="p">:</span> <span class="s2">&quot;https://toabctl.de/schemas/obsci.json&quot;</span><span class="p">,</span>
     <span class="s2">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
@@ -197,6 +214,42 @@ RPM spec files, …).</p>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the test.&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="obsci-packages-project-config-schema-validation">
+<h2>_obsci_packages project config schema validation<a class="headerlink" href="#obsci-packages-project-config-schema-validation" title="Permalink to this headline">¶</a></h2>
+<p>The jsonschema that is used to validate the <cite>_obsci</cite> key/value pair from
+the OBS project configs is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;$id&quot;</span><span class="p">:</span> <span class="s2">&quot;https://toabctl.de/schemas/obsci-config-project.json&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;test_packages&quot;</span> <span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;packages&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/package&quot;</span> <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;package&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;name&quot;</span> <span class="p">],</span>
+            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The OBS project.&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;package&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The OBS package.&quot;</span>
                 <span class="p">}</span>
             <span class="p">}</span>
         <span class="p">}</span>
