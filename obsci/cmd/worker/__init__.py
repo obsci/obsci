@@ -26,6 +26,7 @@ import tempfile
 
 from obsci.worker.obs import OBSCIObs
 from obsci.worker.config_package import OBSCIConfigPackage
+from obsci.worker.config_project import OBSCIConfigProject
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,27 @@ def process_args():
     return vars(parser.parse_args())
 
 
+def get_config_from_packages(obs, project, package):
+    packages_candidates = []
+    obsci_configs = []
+    config_project_str = obs.get_config_from_project(project)
+    if config_project_str:
+        logger.info('Found "_obsci" key in project config')
+        config_project = OBSCIConfigProject(config_project_str)
+        packages_candidates = config_project.conf.get('test_packages', [])
+
+    # the package itself (if not already defined in the project config)
+    if {'project': project, 'package': package} not in packages_candidates:
+        packages_candidates.append({'project': project, 'package': package})
+
+    for pkg in packages_candidates:
+        obsci_config_package_str = obs.get_config_from_package(
+            pkg['project'], pkg['package'])
+        if obsci_config_package_str:
+            obsci_configs.append(OBSCIConfigPackage(obsci_config_package_str))
+    return obsci_configs
+
+
 def main():
     # TODO: make logging configurable
     logging.basicConfig(format='%(levelname)s: %(message)s',
@@ -72,36 +94,30 @@ def main():
     # handle OBS interaction
     obs = OBSCIObs(args['obs_url'], args['obs_username'], args['obs_password'])
 
-    # check if there are some tests defined in the package
-    obsci_config_str = obs.get_config_from_package(
-        args['obs-project'], args['obs-package'])
-
-    if not obsci_config_str:
-        logger.info('Stopping here. No _obsci test config found')
-        return 0
-
-    obsci_config = OBSCIConfigPackage(obsci_config_str.getvalue())
-    if not len(obsci_config.test_names):
-        logger.info('Stopping here. No tests defined in _obsci config')
-        return 0
-
     # tempdir to store files that will be used later
     with tempfile.TemporaryDirectory(prefix='obsci_') as tempdir:
         # a directory where the test files are stored
         test_srcdir = os.path.join(tempdir, 'tests')
         os.mkdir(test_srcdir)
-        for testfilename in obsci_config.test_names:
-            testfile = obs.get_test_from_package(
-                args['obs-project'], args['obs-package'], testfilename)
-            if not testfile:
-                logger.info(
-                    'File for test "{}" not found'.format(testfilename))
-                continue
-            testfilepath = os.path.join(test_srcdir, testfilename)
-            with open(testfilepath, 'wb') as tf:
-                tf.write(testfile.read())
-            # test files should be accessable/executable
-            os.chmod(testfilepath, 0o777)
+
+        # get project config
+        obsci_configs = get_config_from_packages(
+            obs, args['obs-project'], args['obs-package'])
+
+        # get testfiles for all the given obsci configs
+        for obsci_config in obsci_configs:
+            for testfilename in obsci_config.test_names:
+                testfile = obs.get_test_from_package(
+                    args['obs-project'], args['obs-package'], testfilename)
+                if not testfile:
+                    logger.info(
+                        'File for test "{}" not found'.format(testfilename))
+                    continue
+                testfilepath = os.path.join(test_srcdir, testfilename)
+                with open(testfilepath, 'wb') as tf:
+                    tf.write(testfile.read())
+                # test files should be accessable/executable
+                os.chmod(testfilepath, 0o777)
 
         # a directory where the testsubject files are stored
         testsubject_srcdir = os.path.join(tempdir, 'testsubject')
@@ -123,9 +139,13 @@ def main():
         testenv_repos = obs.get_project_repositories(args['obs-project'],
                                                      args['obs-repository'],
                                                      args['obs-architecture'])
+
+        # collect the test names from all obsci_configs
+        testnames = []
+        for conf in obsci_configs:
+            testnames += conf.test_names
         # do the actual work
-        te.run(testenv_repos, testsubject_srcdir,
-               test_srcdir, obsci_config.test_names)
+        te.run(testenv_repos, testsubject_srcdir, test_srcdir, testnames)
 
 
 # for debugging

@@ -13,9 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+import abc
+import yaml
+import jsonschema
+import json
 
 
-class TestOBSCIBase(object):
-    """Basic test class"""
-    pass
+class OBSCIConfigBase(abc.ABC):
+    def __init__(self, config_string):
+        with open(self.schemapath, 'r') as f:
+            self._schema = json.loads(f.read())
+        self._conf = yaml.safe_load(config_string)
+        self._validate()
+
+    @property
+    def schemapath(cls):
+        """return the path to the schema file"""
+
+    @property
+    def conf(self):
+        return self._conf
+
+    def _validate(self):
+        """validate the current config against the schema"""
+        jsonschema.validate(self.conf, self._schema)

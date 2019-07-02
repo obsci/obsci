@@ -1,0 +1,29 @@
+{
+    "$id": "https://toabctl.de/schemas/obsci-config-project.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "test",
+    "type": "object",
+    "required": [ "test_packages" ],
+    "properties": {
+        "packages": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/package" }
+        }
+    },
+    "definitions": {
+        "package": {
+            "type": "object",
+            "required": [ "name" ],
+            "properties": {
+                "project": {
+                    "type": "string",
+                    "description": "The OBS project."
+                },
+                "package": {
+                    "type": "string",
+                    "description": "The OBS package."
+                }
+            }
+        }
+    }
+}

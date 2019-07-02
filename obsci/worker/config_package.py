@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import os
-import yaml
-import jsonschema
 import json
+
+from obsci.worker.config_base import OBSCIConfigBase
 
 
 # the jsonschema to validate the _obsci config which is in packages
@@ -25,19 +26,12 @@ with open(os.path.join(curdir, 'config_package_schema.json'), 'r') as f:
     SCHEMA = json.loads(f.read())
 
 
-class OBSCIConfigPackage(object):
-    """A configration object"""
-    def __init__(self, config_string):
-        self._conf = yaml.safe_load(config_string)
-        self._validate()
-
+class OBSCIConfigPackage(OBSCIConfigBase):
     @property
-    def conf(self):
-        return self._conf
-
-    def _validate(self):
-        """validate the current config against the schema"""
-        jsonschema.validate(self.conf, SCHEMA)
+    def schemapath(self):
+        curdir = os.path.realpath(os.path.join(
+            os.getcwd(), os.path.dirname(__file__)))
+        return os.path.join(curdir, 'config_package_schema.json')
 
     @property
     def test_names(self):

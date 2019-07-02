@@ -18,15 +18,15 @@ import tempfile
 import pathlib
 import os
 
-from obsci.tests.test_base import OBSCITestBase
+from obsci.tests.test_base import TestOBSCIBase
 from obsci import utils
 
 
-class OBSCITestUtils(OBSCITestBase):
+class TestOBSCIUtils(TestOBSCIBase):
     """Test utils"""
     def test_create_tarfile(self):
         with tempfile.TemporaryDirectory() as td:
             pathlib.Path(os.path.join(td, "file1.txt")).touch()
             tar_stream = utils.create_tarfile(td)
             t = tarfile.open(fileobj=tar_stream)
-            self.assertIn('file1.txt', [m.name for m in t.getmembers()])
+            assert 'file1.txt' in [m.name for m in t.getmembers()]

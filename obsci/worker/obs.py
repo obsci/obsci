@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import logging
 import os
 import io
@@ -129,7 +130,8 @@ class OBSCIObs(object):
         for chunk in r.iter_content(4096):
             f.write(chunk)
         f.seek(0)
-        logger.info('Got "{}" file from package'.format(filename))
+        logger.info('Got "{}" file from package {}/{}'.format(
+            filename, project, package))
         # a BytesIO object
         return f
 
@@ -137,6 +139,25 @@ class OBSCIObs(object):
         """try to find a _obsci in a package"""
         f = self._get_file_from_package(project, package, '_obsci')
         return f
+
+    def get_config_from_project(self, project):
+        """try to find a _obsci key in the project config"""
+        url = '{}/source/{}/_config'.format(
+            self._url, project)
+        r = requests.get(url, auth=self._obs_auth)
+        if not r.status_code == 200:
+            logger.info('Can not get _config from project ({})'.format(
+                r.status_code))
+            return None
+        f = io.BytesIO()
+        for chunk in r.iter_content(4096):
+            f.write(chunk)
+        f.seek(0)
+        match = re.search(r'^_obsci:\s*\'(.*)\'', f.read().decode('UTF-8'),
+                          re.MULTILINE)
+        if not match:
+            return None
+        return match.group(1)
 
     def get_test_from_package(self, project, package, testfilename):
         f = self._get_file_from_package(project, package, testfilename)
