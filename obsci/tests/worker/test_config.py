@@ -48,7 +48,7 @@ class TestOBSCIConfigPackage(TestOBSCIBase):
 tests:
   - name: foo
         """,
-         ['foo']
+            ['foo']
         ),
     ])
     def test_config_package_valid(self, test_input, expected_names):
